@@ -3,118 +3,94 @@ import 'contact_data.dart';
 import 'contact_details.dart';
 import 'package:http/http.dart';
 import 'dart:convert';
+import 'package:final_case_revin/auth_page.dart';
+import 'package:final_case_revin/drawer_class.dart';
+import 'package:http/http.dart' as http;
 
-late List<Post> users = [];
+Future<List<User>> _fetchUsersList() async {
+  final url = "https://jsonplaceholder.typicode.com/users";
+
+  final response = await http.get(Uri.parse(url));
+
+  if (response.statusCode == 200) {
+    List jsonResponse = json.decode(response.body);
+    return jsonResponse.map((user) => User.fromJson(user)).toList();
+  } else {
+    throw Exception('Список пользователей недосупен!');
+  }
+}
+
+ListView _usersListView(data) {
+
+  return ListView.builder(
+      itemCount: data.length,
+      itemBuilder: (context, index) {
+        return _userListTile(context, data[index]);
+      });
+}
+
+ListTile _userListTile(BuildContext context, User user) => ListTile(
+  title: Text("${user.name}",
+      style: TextStyle(
+        fontWeight: FontWeight.w500,
+        fontSize: 20,
+      )),
+  subtitle: Text("${user.email}"),
+  leading: CircleAvatar(
+    child: Text((user.name ?? '-')[0]),
+  ),
+  trailing: Icon(Icons.local_post_office),
+  onTap: () {
+  Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) {
+          return ContactViewPage(user: user,);
+        },
+      ),
+    );
+
+  },
+);
 
 class ContactsPage extends StatefulWidget {
-  const ContactsPage({Key? key}) : super(key: key);
 
+  const ContactsPage({Key? key}) : super(key: key);
 
   @override
   _ContactsPageState createState() => _ContactsPageState();
 }
 
 class _ContactsPageState extends State<ContactsPage> {
-
-  final url = "https://jsonplaceholder.typicode.com/posts/";
-
-  Future<void> fetchPosts() async {
-    try {
-
-      final response = await get(Uri.parse(url));
-      final jsonData = jsonDecode(response.body);
-
-      setState(() {
-
-        for (var i = 0; i < jsonData.length; i++) {
-          final post = jsonData[i];
-          Post record = Post(UserID: post["userId"],
-              id: post["id"],
-              Title: post["title"],
-              Body: post['body']);
-          users.add(record);
-        }
-      });
-
-    } catch (err){throw Exception('Failed to load json $err');}
-
-  }
+  late Future<List<User>> futureUsersList;
+  late List<User> usersListData;
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
-
-    fetchPosts();
+    futureUsersList = _fetchUsersList();
   }
-
-
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text("Posts"),
-        ),
-        body: Container(
-          child: ContactList(users),
-        )
+        appBar:AppBar(
+        title: Text('Список пользователей'),
+    ),
+        drawer: buildDrawer(),
+        body: Center(
+        child: FutureBuilder<List<User>>(
+            future: futureUsersList,
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                usersListData = snapshot.data!;
+                return _usersListView(usersListData);
+              } else if (snapshot.hasError) {
+                return Text('${snapshot.error}');
+              }
+
+              return const CircularProgressIndicator();
+            })
+    )
     );
-  }
-}
-
-class ContactList extends StatelessWidget {
-  final List _users;
-
-  ContactList(this._users);
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView.builder(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      itemCount: users.length,
-      itemBuilder: _buildContacts,
-    );
-  }
-
-  Widget _buildContacts(context, index) {
-    return ContactItem(_users[index]);
-  }
-
-}
-
-class ContactItem extends StatelessWidget {
-  const ContactItem(this.user);
-
-  final Post user;
-
-  Widget _buildTiles(BuildContext context, Post user) {
-    return ListTile(
-      title: Text(user.Title),
-      subtitle: Text("ID Автора ${user.UserID}"),
-      leading: CircleAvatar(
-        child: Text("${user.id}"),
-      ),
-      trailing: Icon(Icons.local_post_office),
-      onTap: () {
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) {
-              return ContactViewPage(user: user,);
-               return Scaffold(
-                 appBar: AppBar(
-                   title: Text(user.Title)
-                 ),
-                 body: Text('Hello'),
-               );
-            },
-          ),
-        );
-      },
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return _buildTiles(context, user);
   }
 }

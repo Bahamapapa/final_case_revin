@@ -1,31 +1,138 @@
-class Post {
-  final int UserID;
-  final int id;
-  final String Title;
-  final String Body;
+/*
+{
+    "id": 1,
+    "name": "Leanne Graham",
+    "username": "Bret",
+    "email": "Sincere@april.biz",
+    "address": {
+      "street": "Kulas Light",
+      "suite": "Apt. 556",
+      "city": "Gwenborough",
+      "zipcode": "92998-3874",
+      "geo": {
+        "lat": "-37.3159",
+        "lng": "81.1496"
+      }
+    },
+    "phone": "1-770-736-8031 x56442",
+    "website": "hildegard.org",
+    "company": {
+      "name": "Romaguera-Crona",
+      "catchPhrase": "Multi-layered client-server neural-net",
+      "bs": "harness real-time e-markets"
+    }
+  },
 
-  const Post({required this.UserID, required this.id, required this.Title, required this.Body});
+ */
+class Geo{
+  String? lat;
+  String? lng;
+
+  Geo({this.lat, this.lng});
+
+  Geo.fromJson(Map<String, dynamic> json) {
+    lat = json['lat'];
+    lng = json['lng'];
+  }
 
 }
 
-/*
+class Address {
+  String? street;
+  String? suite;
+  String? city;
+  String? zipcode;
+  Geo? geo;
 
-const List<User> users = const <User>[
-  const User(Name: 'Александр Новиков', Phone: '+7 555 230 12 15', Data: 'Начальник отдела', Company: 'Роснефть'),
-  const User(Name: 'Борис Акунин', Phone: '+7 555 231 15 17', Data: 'Начальник отдела', Company: 'Роснефть'),
-  const User(Name: 'Владимир Набоков', Phone: '+7 555 232 17 19', Data: 'Начальник отдела', Company: 'Роснефть'),
-  const User(Name: 'Григорий Потемкин', Phone: '+7 555 233 19 21', Data: 'Начальник отдела', Company: 'Роснефть'),
-  const User(Name: 'Дмитрий Донской', Phone: '+7 555 234 21 23', Data: 'Начальник отдела', Company: 'Роснефть'),
-  const User(Name: 'Евгений Марышев', Phone: '+7 555 235 23 25', Data: 'Начальник отдела', Company: 'Роснефть'),
-  const User(Name: 'Жанна Агузарова', Phone: '+7 555 236 25 27', Data: 'Начальник отдела', Company: 'Роснефть'),
-  const User(Name: 'Зинаида Ант', Phone: '+7 555 237 27 29', Data: 'Начальник отдела', Company: 'Роснефть'),
-  const User(Name: 'Игорь Горелов', Phone: '+7 555 238 29 31', Data: 'Начальник отдела', Company: 'Роснефть'),
-  const User(Name: 'Константин Ивлев', Phone: '+7 555 239 31 33', Data: 'Начальник отдела', Company: 'Роснефть'),
-  const User(Name: 'Леонид Агутин', Phone: '+7 555 240 33 35', Data: 'Начальник отдела', Company: 'Роснефть'),
-  const User(Name: 'Мария Варенникова', Phone: '+7 555 241 35 37', Data: 'Начальник отдела', Company: 'Роснефть'),
-  const User(Name: 'Николай Новиков', Phone: '+7 555 242 37 39', Data: 'Начальник отдела', Company: 'Роснефть'),
-  const User(Name: 'Ольга Светская', Phone: '+7 555 243 39 41', Data: 'Начальник отдела', Company: 'Роснефть'),
-  const User(Name: 'Петр Первый', Phone: '+7 555 244 41 43', Data: 'Начальник отдела', Company: 'Роснефть'),
-  const User(Name: 'Родион Нахапетов', Phone: '+7 555 245 43 45', Data: 'Начальник отдела', Company: 'Роснефть'),
-  const User(Name: 'Сергей Науменко', Phone: '+7 555 246 45 47', Data: 'Начальник отдела', Company: 'Роснефть')
-];*/
+  Address({this.street,
+    this.suite,
+    this.city,
+    this.zipcode,
+    this.geo
+  });
+
+  Address.fromJson(Map<String, dynamic> json) {
+    street = json['street'];
+    suite = json['suite'];
+    city = json['city'];
+    zipcode = json['zipcode'];
+    geo = json['geo'] != null ? Geo.fromJson(json['geo']) : null;
+  }
+
+}
+
+class Company{
+  String? name;
+  String? catchPhrase;
+  String? bs;
+
+  Company({this.name, this.catchPhrase, this.bs});
+
+  Company.fromJson(Map<String, dynamic> json) {
+    name = json['name'];
+    catchPhrase = json['catchPhrase'];
+    bs = json['bs'];
+  }
+}
+
+
+class User {
+  int? id;
+  String? name;
+  String? username;
+  String? email;
+  Address? address;
+  String? phone;
+  String? website;
+  Company? company;
+
+  User({this.id,
+    this.name,
+    this.username,
+    this.email,
+    this.address,
+    this.phone,
+    this.website,
+    this.company
+  });
+
+  User.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    name = json['name'];
+    username = json['username'];
+    email = json['email'];
+    address =
+    json['address'] != null ? Address.fromJson(json['address']) : null;
+    phone = json['phone'];
+    website = json['website'];
+    company =
+    json['company'] != null ? Company.fromJson(json['company']) : null;
+  }
+}
+
+/*
+{
+  {
+    "userId": 1,
+    "id": 1,
+    "title": "delectus aut autem",
+    "completed": false
+  },
+ */
+
+class Task {
+  int? userId;
+  int? id;
+  String? title;
+  bool? completed;
+
+  Task({this.userId, this.id, this.title, this.completed});
+
+  Task.fromJson(Map<String, dynamic> json) {
+    userId = json['userId'];
+    id = json['id'];
+    title = json['title'];
+    completed = json['completed'];
+  }
+
+}
